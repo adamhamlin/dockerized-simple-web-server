@@ -1,0 +1,80 @@
+# Super Simple Fastify Web Server
+
+> WIP
+
+Super-simple Fastify web server! Quickly spin up a server for dev/test without all the bloat and boilerplate:
+
+## Usage
+
+```ts
+import { FastifyInstance, SimpleFastifyServer } from 'super-simple-fastify-server';
+
+const server = new SimpleFastifyServer(
+    async (app: FastifyInstance) => {
+        fastify.get('/hello-world', async (request, _reply) => {
+            return { message: `Hello, ${request.query.target}!` };
+        });
+    },
+    {
+        host: '127.0.0.1',
+        port: 3456,
+    }
+);
+await server.start();
+
+// ...
+// [12:54:50.668] INFO: Server listening at http://127.0.0.1:3456
+// [12:54:50.669] INFO: Server http://127.0.0.1:3456 ready to accept connections!
+
+// Now you can hit http://127.0.0.1:3456/hello-world?target=World
+```
+
+And when you're done:
+
+```ts
+await server.stop();
+
+// ...
+// [12:57:16.480] INFO: Server http://127.0.0.1:3456 stopped.
+```
+
+## Configuration
+
+The `SimpleFastifyServer` constructor supports the following configuration options. For any omitted options, it will attempt to pull a value from environment before falling back to the default:
+
+-   `host`
+    -   Env Var: `SIMPLE_FASTIFY_SERVER_HOST`
+    -   Default: `'0.0.0.0'`
+-   `port`
+    -   Env Var: `SIMPLE_FASTIFY_SERVER_PORT`
+    -   Default: `3456`
+
+## Dockerizing the Server
+
+See the [Docker README](./readme/DOCKER.md) for more info.
+
+## Miscellaneous
+
+### Returning response streams
+
+You may want to test a client that consumes a large quantity of data from a response stream. Here is an example using the built-in `buildStream` utility:
+
+```ts
+import { FastifyInstance, SimpleFastifyServer, buildStream, sleep } from 'super-simple-fastify-server';
+
+const server = new SimpleFastifyServer(async (app: FastifyInstance) => {
+    app.get('/hello-world/stream', async function (_request, reply) {
+        const myStream = buildStream(async (stream) => {
+            await sleep(1000);
+            stream.write(JSON.stringify({ first: 'Hello' }));
+            await sleep(500);
+            stream.write(JSON.stringify({ second: ', ' }));
+            await sleep(500);
+            stream.write(JSON.stringify({ third: 'World!' }));
+        });
+
+        reply.header('Content-Type', 'application/octet-stream');
+        return myStream;
+    });
+});
+```
