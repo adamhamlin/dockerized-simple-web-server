@@ -1,8 +1,15 @@
 # Super Simple Fastify Web Server
 
-> WIP
+[![npm version](https://badge.fury.io/js/super-simple-fastify-server.svg)](https://badge.fury.io/js/super-simple-fastify-server)
+[![CI Status Badge](https://github.com/adamhamlin/super-simple-fastify-server/actions/workflows/ci.yaml/badge.svg)](https://github.com/adamhamlin/super-simple-fastify-server/actions/workflows/ci.yaml)
 
 Super-simple Fastify web server! Quickly spin up a server for dev/test without all the bloat and boilerplate:
+
+## Install
+
+```bash
+npm i --save-dev super-simple-fastify-server
+```
 
 ## Usage
 
