@@ -1,5 +1,8 @@
-# Local usage
-driver.ts
+# Local docker usage
+Dockerfile
+.dockerignore
+docker-compose.yaml
+entry-point.ts
 
 # TS build dir
 dist/*
