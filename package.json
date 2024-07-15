@@ -19,7 +19,7 @@
     "author": "Adam C Hamlin <achamlin@gmail.com>",
     "license": "MIT",
     "scripts": {
-        "start": "ts-node ./driver.ts",
+        "start": "ts-node ./entry-point.ts",
         "test": "echo \"Error: no test specified\" && exit 1",
         "_lint": "eslint --fix",
         "_lint:check": "eslint",
