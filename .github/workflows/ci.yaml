@@ -10,11 +10,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout/install
+      # NOTE: compilation is done as part of the "prepare" script, which is run during npm ci
+      - name: Checkout/install/compile
         uses: adamhamlin/checkout-node-project@v1
 
       - name: Lint
         run: npm run check
 
-      - name: Compile
-        run: npm run compile
+      - name: Tests
+        run: npm test
