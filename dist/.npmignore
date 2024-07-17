@@ -1,2 +1,6 @@
 # Local dev files
 entry-point.*
+
+# Test files
+__tests__
+jest.config.*
