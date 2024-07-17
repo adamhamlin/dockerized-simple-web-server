@@ -5,6 +5,8 @@
 
 Super-simple Fastify web server! Quickly spin up a server for dev/test without all the bloat and boilerplate.
 
+> _**NOTE: This is still a WIP!**_
+
 ## Install
 
 ```bash
