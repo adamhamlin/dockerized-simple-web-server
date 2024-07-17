@@ -1,4 +1,4 @@
-import MemoryStream from 'memorystream';
+import { Readable } from 'stream';
 
 /**
  * Async wait function
@@ -8,19 +8,20 @@ export async function sleep(ms: number): Promise<void> {
 }
 
 /**
- * Get a stream that that will be processed in the specified callback function.
- * NOTE: This function will not await the completion of the callback
- * @param cb callback that should be used to write data to the stream. It does not need
- * to call stream.end() before returning
+ * Build a readable stream of objects from the supplied generator function. Will coerce objects to strings
+ * (using JSON.stringify) such that they are serializable for an http response stream.
+ * @param generatorFn function that returns an async generator for the stream
+ * @param delimiter the delimiter to use between subsequent objects
  */
-export function buildStream(cb: (stream: MemoryStream) => Promise<void>): MemoryStream {
-    const stream = new MemoryStream();
-    cb(stream)
-        .finally(() => {
-            stream.end();
-        })
-        .catch((err) => {
-            stream.emit('error', err);
-        });
-    return stream;
+export function buildObjectStreamResponse<T extends object>(
+    generator: AsyncGenerator<T, void>,
+    delimiter = ''
+): Readable {
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    async function* stringifyObjects() {
+        for await (const obj of generator) {
+            yield `${JSON.stringify(obj)}${delimiter}`;
+        }
+    }
+    return Readable.from(stringifyObjects());
 }

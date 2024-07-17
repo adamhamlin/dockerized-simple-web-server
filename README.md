@@ -3,7 +3,7 @@
 [![npm version](https://badge.fury.io/js/super-simple-fastify-server.svg)](https://badge.fury.io/js/super-simple-fastify-server)
 [![CI Status Badge](https://github.com/adamhamlin/super-simple-fastify-server/actions/workflows/ci.yaml/badge.svg)](https://github.com/adamhamlin/super-simple-fastify-server/actions/workflows/ci.yaml)
 
-Super-simple Fastify web server! Quickly spin up a server for dev/test without all the bloat and boilerplate:
+Super-simple Fastify web server! Quickly spin up a server for dev/test without all the bloat and boilerplate.
 
 ## Install
 
@@ -64,24 +64,49 @@ See the [Docker README](./readme/DOCKER.md) for more info.
 
 ### Returning response streams
 
-You may want to test a client that consumes a large quantity of data from a response stream. Here is an example using the built-in `buildStream` utility:
+You may want to test a client that consumes a large quantity of data from a JSON response stream. Here is a very simple example using the built-in `buildObjectStreamResponse` utility:
 
+<!-- prettier-ignore -->
 ```ts
-import { FastifyInstance, SimpleFastifyServer, buildStream, sleep } from 'super-simple-fastify-server';
+import { FastifyInstance, SimpleFastifyServer, buildObjectStreamResponse, sleep } from 'super-simple-fastify-server';
 
 const server = new SimpleFastifyServer(async (app: FastifyInstance) => {
     app.get('/hello-world/stream', async function (_request, reply) {
-        const myStream = buildStream(async (stream) => {
-            await sleep(1000);
-            stream.write(JSON.stringify({ first: 'Hello' }));
-            await sleep(500);
-            stream.write(JSON.stringify({ second: ', ' }));
-            await sleep(500);
-            stream.write(JSON.stringify({ third: 'World!' }));
-        });
-
+        async function* myGeneratorFn() {
+            await sleep(2000);
+            yield *[
+                { message: 'Hello' },
+                { message: ', ' },
+                { message: 'World!' }
+            ];
+        }
+        const stream = buildObjectStreamResponse(myGeneratorFn());
         reply.header('Content-Type', 'application/octet-stream');
-        return myStream;
+        return stream;
     });
 });
+```
+
+And, an example client (using [Axios](https://github.com/axios/axios)) to process the response:
+
+<!-- prettier-ignore -->
+```ts
+import stream from 'stream';
+import { chain } from 'stream-chain';
+import { withParser } from 'stream-json/streamers/StreamValues';
+
+const response = await myAxiosClient.get('/hello-world/stream', { responseType: 'stream' });
+const rawStream: stream.Readable = response.data;
+
+const streamChain = chain([
+    rawStream,
+    withParser(),
+    (parsed) => parsed.value
+]);
+
+let fullMessage = '';
+for await (const obj of streamChain) {
+    fullMessage += obj.message;
+}
+console.log(fullMessage); // Hello, World!
 ```
