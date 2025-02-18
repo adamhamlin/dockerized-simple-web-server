@@ -5,13 +5,13 @@
 
 Super-simple Fastify web server! Quickly spin up a server for dev/test without all the bloat and boilerplate.
 
-> _**NOTE: This is still a WIP!**_
-
 ## Install
 
 ```bash
 npm i --save-dev super-simple-fastify-server
 ```
+
+> _**NOTE**: `fastify` (along with `pino-pretty`) is denoted as a peer dependency in this library so you can choose a specific version as needed._
 
 ## Usage
 
