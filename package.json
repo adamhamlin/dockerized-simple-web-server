@@ -1,6 +1,6 @@
 {
     "name": "super-simple-fastify-server",
-    "version": "0.1.2",
+    "version": "1.0.0",
     "description": "Super simple fastify web server for rapid dev/test",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
