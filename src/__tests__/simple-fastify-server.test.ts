@@ -74,7 +74,7 @@ describe('SimpleFastifyServer', () => {
             const response = await getAxiosClient().get('/hello-world/stream', { responseType: 'stream' });
             const rawStream: stream.Readable = response.data;
 
-            const streamChain = chain([rawStream, withParser(), (parsed) => parsed.value]);
+            const streamChain = chain([rawStream, withParser(), (parsed: { value: string }) => parsed.value]);
 
             const res = [];
             for await (const chunk of streamChain) {
